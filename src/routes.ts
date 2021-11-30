@@ -1,0 +1,43 @@
+import { Router } from 'express'
+
+// Users 
+import { 
+  CreateUserController, 
+  DeleteUserController, 
+  GetAllUsersController, 
+  GetUserController, 
+  UpdateUserController 
+} from './users/controllers'
+
+
+// Authentication
+import {loginController} from './authentication/controller'
+import AuthenticationMiddleware from './authentication/middlewares/autorization'
+
+// Friends
+import {
+  CreateRequestFriendController,
+  GetAllRequestFriendController,
+  DeleteRequestFriendController
+} from './friends/controllers'
+
+const routes = Router()
+
+// Users
+.post('/users', CreateUserController.create)
+.put('/users/:id', AuthenticationMiddleware.ensureAuthenticated, UpdateUserController.update)
+.delete('/users/:id', AuthenticationMiddleware.ensureAuthenticated, DeleteUserController.deleteUser)
+.get('/users/:id', AuthenticationMiddleware.ensureAuthenticated, GetUserController.getUser)
+.get('/users', AuthenticationMiddleware.ensureAuthenticated, GetAllUsersController.getAll)
+
+// Authentication
+.post('/login', loginController)
+
+// Friends
+.post('/friends/send_request', AuthenticationMiddleware.ensureAuthenticated, CreateRequestFriendController.sendRequest)
+.get('/friends/get_requesters/:requesterUserId', AuthenticationMiddleware.ensureAuthenticated, GetAllRequestFriendController.getAll)
+.delete('/friends/cancel_request/:requesterUserId/:targetUserId', AuthenticationMiddleware.ensureAuthenticated, DeleteRequestFriendController.deleteRequest)
+
+
+
+export default routes
