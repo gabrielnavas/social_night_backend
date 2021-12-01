@@ -12,7 +12,7 @@ import {
 
 // Authentication
 import {loginController} from './authentication/controller'
-import AuthenticationMiddleware from './authentication/middlewares/autorization'
+import AuthenticationMiddleware from './authentication/middlewares/AutorizationMiddlewares'
 
 // Friends
 import {
