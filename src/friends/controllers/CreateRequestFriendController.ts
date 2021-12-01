@@ -25,11 +25,11 @@ const CreateRequestFriendController = {
       await CreateRequestFriendController._insertSendRequestFriend(requesterUserId, targetUserId)
       
       res.status(200).send()
-    }
-    catch(ex) {
-      console.error(ex)
-      res.status(500).json({message: 'server error'})
-    }
+      }
+      catch(ex) {
+        console.error(ex)
+        res.status(500).json({message: 'server error'})
+      }
   },
   
   _alreadyExistSendRequestCount: async (requesterUserId: number, targetUserId: number): Promise<boolean> => {

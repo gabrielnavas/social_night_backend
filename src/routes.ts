@@ -18,7 +18,8 @@ import AuthenticationMiddleware from './authentication/middlewares/autorization'
 import {
   CreateRequestFriendController,
   GetAllRequestFriendController,
-  DeleteRequestFriendController
+  DeleteRequestFriendController,
+  CreateFriendshipController
 } from './friends/controllers'
 
 const routes = Router()
@@ -34,10 +35,12 @@ const routes = Router()
 .post('/login', loginController)
 
 // Friends
+// send request
 .post('/friends/send_request', AuthenticationMiddleware.ensureAuthenticated, CreateRequestFriendController.sendRequest)
 .get('/friends/get_requesters/:requesterUserId', AuthenticationMiddleware.ensureAuthenticated, GetAllRequestFriendController.getAll)
 .delete('/friends/cancel_request/:requesterUserId/:targetUserId', AuthenticationMiddleware.ensureAuthenticated, DeleteRequestFriendController.deleteRequest)
-
+// friendship
+.post('/friends/friendship/accept', AuthenticationMiddleware.ensureAuthenticated, CreateFriendshipController.createFriend)
 
 
 export default routes

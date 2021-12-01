@@ -1,3 +1,4 @@
-export * from './CreateRequestFriend'
-export * from './GetAllRequestFriend'
-export * from './DeleteRequestFriend'
+export * from './CreateRequestFriendController'
+export * from './GetAllRequestFriendController'
+export * from './DeleteRequestFriendController'
+export * from './CreateFriendshipController'

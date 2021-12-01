@@ -25,11 +25,10 @@ create table if not exists friends.send_request_friend(
 );
 
 create table if not exists friends.friend(
-	user_id int references users.user(id),
-	friend_id int references users.user(id),
-	primary key(user_id, friend_id),
-	sended_request_at timestamp not null,
-	accepted_at timestamp not null default now()
+	friend_one_id int references users.user(id),
+	friend_two_id int references users.user(id),
+	primary key(friend_one_id, friend_two_id),
+	created_at timestamp not null default now()
 );
 -- create tables end
 

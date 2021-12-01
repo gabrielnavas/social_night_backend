@@ -6,14 +6,14 @@ import { UserTokenPayload } from "../models";
 const AuthenticationMiddleware = {
   ensureAuthenticated: (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = AuthenticationMiddleware._verifyHeader(req)
+      const token = Helpers.verifyHeader(req)
       if(!token) {
         return res.status(401).json({
           message: 'You dont have permission. You need set on the header Authorization: Bearer <token>'
         }).end()
       }
 
-      const secretKey = AuthenticationMiddleware._getSecretKey()
+      const secretKey = Helpers.getSecretKey()
       const jwtPayload = jwt.verify(token, secretKey) as JwtPayload
       const userData = jwtPayload.data as UserTokenPayload
       if (userData.userID <= 0) {
@@ -30,7 +30,10 @@ const AuthenticationMiddleware = {
     }
   },
 
-  _verifyHeader: (req: Request): string | null => {
+}
+
+const Helpers = {
+  verifyHeader: (req: Request): string | null => {
     const authorization = req.headers.authorization
     if (!authorization) {
       return null
@@ -43,15 +46,13 @@ const AuthenticationMiddleware = {
     return token
   },
 
-  _getSecretKey: () => {
+  getSecretKey: () => {
     const secretKey = process.env.SECRET_KEY 
     if (!secretKey) {
       throw new Error('need set SECRET_KEY=? .env')
     }
     return secretKey
   },
-
-
 }
 
 export default AuthenticationMiddleware 
