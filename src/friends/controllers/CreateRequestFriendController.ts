@@ -2,27 +2,27 @@ import {Request, Response} from 'express'
 import {db} from '../../shared/database'
 
 const CreateRequestFriendController = {
-  sendRequest: async (req: Request, res: Response) => {
+  createRequest: async (req: Request, res: Response) => {
     try {
       const requesterUserId = parseInt(req.body.requesterUserId)
       const targetUserId = parseInt(req.body.targetUserId)
 
-      if(!await CreateRequestFriendController._userExists(requesterUserId)) {
+      if(!await CreateRequestFriendUsecase.userExists(requesterUserId)) {
         res.status(400).json({message: 'requesterUserId not found'})
         return
       }
   
-      if(!await CreateRequestFriendController._userExists(targetUserId)) {
+      if(!await CreateRequestFriendUsecase.userExists(targetUserId)) {
         res.status(400).json({message: 'targetUserId not found'})
         return
       }
   
-      if(await CreateRequestFriendController._alreadyExistSendRequestCount(requesterUserId, targetUserId)) {
+      if(await CreateRequestFriendUsecase.alreadyExistSendRequestCount(requesterUserId, targetUserId)) {
         res.status(400).json({message: 'Solicitação de amizade já existe.'})
         return 
       }
   
-      await CreateRequestFriendController._insertSendRequestFriend(requesterUserId, targetUserId)
+      await CreateRequestFriendUsecase.insertSendRequestFriend(requesterUserId, targetUserId)
       
       res.status(200).send()
       }
@@ -31,8 +31,11 @@ const CreateRequestFriendController = {
         res.status(500).json({message: 'server error'})
       }
   },
-  
-  _alreadyExistSendRequestCount: async (requesterUserId: number, targetUserId: number): Promise<boolean> => {
+
+}
+
+const CreateRequestFriendUsecase = {
+  alreadyExistSendRequestCount: async (requesterUserId: number, targetUserId: number): Promise<boolean> => {
     const requestFriend = await db.oneOrNone<{requesterUserID: number, targetUserID: number}>(`
       select requester_id, target_id 
       from friends.send_request_friend
@@ -44,7 +47,7 @@ const CreateRequestFriendController = {
     return requestFriend !== null
   },
 
-  _userExists: async (userID: number): Promise<boolean> => {
+  userExists: async (userID: number): Promise<boolean> => {
     const user = await db.oneOrNone<{id: number}>(`
       select id 
       from users.user
@@ -53,7 +56,7 @@ const CreateRequestFriendController = {
     return user !== null
   },
 
-  _insertSendRequestFriend: async(requesterUserID: number, targetUserID: number): Promise<void> => {
+  insertSendRequestFriend: async(requesterUserID: number, targetUserID: number): Promise<void> => {
     await db.none(`
       insert into friends.send_request_friend 
         (requester_id, target_id)

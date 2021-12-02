@@ -21,6 +21,8 @@ import {
   DeleteRequestFriendController,
   CreateFriendshipController
 } from './friends/controllers'
+import { DeleteFriendshipController } from './friends/controllers/DeleteFriendshipController'
+import { GetAllFriendshipsController } from './friends/controllers/GetAllFriendshipsController'
 
 const routes = Router()
 
@@ -36,11 +38,13 @@ const routes = Router()
 
 // Friends
 // send request
-.post('/friends/send_request', AuthenticationMiddleware.ensureAuthenticated, CreateRequestFriendController.sendRequest)
+.post('/friends/send_request', AuthenticationMiddleware.ensureAuthenticated, CreateRequestFriendController.createRequest)
 .get('/friends/get_requesters/:requesterUserId', AuthenticationMiddleware.ensureAuthenticated, GetAllRequestFriendController.getAll)
 .delete('/friends/cancel_request/:requesterUserId/:targetUserId', AuthenticationMiddleware.ensureAuthenticated, DeleteRequestFriendController.deleteRequest)
 // friendship
 .post('/friends/friendship/accept', AuthenticationMiddleware.ensureAuthenticated, CreateFriendshipController.createFriend)
+.delete('/friends/friendship/cancel/:requesterUserId/:targetUserId', AuthenticationMiddleware.ensureAuthenticated, DeleteFriendshipController.deleteFriendship)
+.get('/friends/:requesterUserId', AuthenticationMiddleware.ensureAuthenticated, GetAllFriendshipsController.getAll)
 
 
 export default routes

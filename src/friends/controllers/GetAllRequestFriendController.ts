@@ -2,7 +2,7 @@ import {Request, Response} from 'express'
 import {db} from '../../shared/database'
 
 type Friend = {
-  Id: number
+  userId: number
   username: number
   sendedAt: Date,
 }
