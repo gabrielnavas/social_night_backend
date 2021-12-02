@@ -1,5 +1,5 @@
 import app from './app'
-import db from './shared/database'
+import {db} from './shared/database'
 
 const PORT = process.env.PORT || 3333
 const NODE_ENV = process.env.NODE_ENV
@@ -11,15 +11,15 @@ const verifyEnv = () => {
   }
 }
 
-const verifyDatabase = () => {
-  db.many(`
+const verifyDatabase = async () => {
+  await db.many(`
     select test_online
     from (
         values ('online')
     ) s(test_online);
   `)
     .then(() => {})
-    .catch(err => {
+    .catch((err: Error) => {
       console.log('[ * ] DATABASE OFF!!!')
       console.error(err)
       process.exit()

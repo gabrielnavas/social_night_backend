@@ -13,10 +13,10 @@ describe('DeleteUser Success', () => {
     await db.none('delete from users.user;')
   })
 
-  test('should get an user', async () => {
+  test('should get an user by username', async () => {
     const userAuth = await createUserAndAuthHelper()
     const response = await supertest(app)
-      .get(`/users/${userAuth.user.id}`)
+      .get(`/users/username/${userAuth.user.username}`)
       .set('Authorization', `Bearer ${userAuth.token}`)
 
     const statusHttp = response.statusCode
@@ -24,7 +24,7 @@ describe('DeleteUser Success', () => {
     const lengthEntriesBody = Object.entries(body).length
 
     expect(statusHttp).toEqual(200)
-    expect(lengthEntriesBody).toEqual(5)
+    expect(lengthEntriesBody).toBeGreaterThanOrEqual(5)
 
     expect(body.id).toBeGreaterThan(0)
     expect(body.username).toEqual(userAuth.user.username)

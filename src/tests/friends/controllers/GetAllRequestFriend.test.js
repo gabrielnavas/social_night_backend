@@ -8,12 +8,12 @@ import {createUserHelper} from '../../users/controllers/createUserHelper'
 import {sendRequestFriendHelper} from './sendRequestFriendHelper'
 
 describe('GetAllRequestFriend Success', () => {
-  beforeAll( async () => {
+  beforeEach( async () => {
     await db.none('delete from friends.send_request_friend;')
     await db.none('delete from users.user;')
   })
 
-  afterAll(async () => {
+  afterEach(async () => {
     await db.none('delete from friends.send_request_friend;')
     await db.none('delete from users.user;')
   })
