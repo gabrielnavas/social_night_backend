@@ -4,10 +4,10 @@ import { db } from '../../../shared/database'
 
 import {createUserAndAuthHelper} from '../../authentication/controllers/createUserAndAuthHelper'
 import {createUserHelper} from '../../users/controllers/createUserHelper'
-import {acceptFriendshipHelper} from '../../friends/controllers/acceptFriendshipHelper'
-import {sendRequestFriendHelper} from '../../friends/controllers/sendRequestFriendHelper'
+import {acceptFriendshipHelper} from './acceptFriendshipHelper'
+import {sendRequestFriendHelper} from './sendRequestFriendHelper'
 
-describe('IsFriendController Success', () => {
+describe('GetStatusFriendController Success', () => {
   beforeEach( async () => {
     await db.none('delete from friends.friend;')
     await db.none('delete from friends.send_request_friend;')
@@ -20,30 +20,24 @@ describe('IsFriendController Success', () => {
     await db.none('delete from users.user;')
   })
 
-  test('should return true is friend if user one is friend of user 2', async () => {
+  test('should return status Unknow', async () => {
     const userAuth = await createUserAndAuthHelper()
     const userRequester = await createUserHelper()
     const userTarget = await createUserHelper()
 
-    // send request friend
-    await sendRequestFriendHelper(userAuth.token, userRequester.id, userTarget.id)
-    
-    // accept friendship
-    await acceptFriendshipHelper(userAuth.token, userRequester.id, userTarget.id)
-
     // verify 
     const response = await supertest(app)
-      .get(`/friends/is_friend/${userRequester.id}/${userTarget.id}`)
+      .get(`/friends/status/${userRequester.id}/${userTarget.id}`)
       .set('Authorization', `Bearer ${userAuth.token}`)
   
   
     expect(response.status).toEqual(200)
-    expect(response.body).toEqual({isFriend: true})
+    expect(response.body).toEqual({status: 'Unknow'})
   })
 })
 
 
-describe('IsFriendController Success', () => {
+describe('GetStatusFriendController Success', () => {
   beforeEach( async () => {
     await db.none('delete from friends.friend;')
     await db.none('delete from friends.send_request_friend;')
@@ -56,60 +50,58 @@ describe('IsFriendController Success', () => {
     await db.none('delete from users.user;')
   })
 
-  test('should return true is friend if user one is friend of user 2 reverse', async () => {
+  test('should return status Waiting', async () => {
     const userAuth = await createUserAndAuthHelper()
     const userRequester = await createUserHelper()
     const userTarget = await createUserHelper()
 
     // send request friend
     await sendRequestFriendHelper(userAuth.token, userRequester.id, userTarget.id)
-    
-    // accept friendship
-    await acceptFriendshipHelper(userAuth.token, userRequester.id, userTarget.id)
 
     // verify 
     const response = await supertest(app)
-      .get(`/friends/is_friend/${userTarget.id}/${userRequester.id}`)
+      .get(`/friends/status/${userRequester.id}/${userTarget.id}`)
       .set('Authorization', `Bearer ${userAuth.token}`)
   
   
     expect(response.status).toEqual(200)
-    expect(response.body).toEqual({isFriend: true})
+    expect(response.body).toEqual({status: 'Waiting'})
   })
 })
 
 
-describe('IsFriendController Success', () => {
+describe('GetStatusFriendController Success', () => {
   beforeEach( async () => {
     await db.none('delete from friends.friend;')
     await db.none('delete from friends.send_request_friend;')
     await db.none('delete from users.user;')
   })
-
+  
   afterEach(async () => {
     await db.none('delete from friends.friend;')
     await db.none('delete from friends.send_request_friend;')
     await db.none('delete from users.user;')
   })
 
-  test('should return false if user one is friend of user 2', async () => {
+  test('should return status Waiting', async () => {
+
     const userAuth = await createUserAndAuthHelper()
     const userRequester = await createUserHelper()
     const userTarget = await createUserHelper()
-    const userTarget2 = await createUserHelper()
 
     // send request friend
     await sendRequestFriendHelper(userAuth.token, userRequester.id, userTarget.id)
-    
-    // accept friendship
-    await acceptFriendshipHelper(userAuth.token, userRequester.id, userTarget.id)
+
+      // accept friendship
+      await acceptFriendshipHelper(userAuth.token, userRequester.id, userTarget.id)
 
     // verify 
-    const response =  await supertest(app)
-      .get(`/friends/is_friend/${userRequester.id}/${userTarget2.id}`)
+    const response = await supertest(app)
+      .get(`/friends/status/${userRequester.id}/${userTarget.id}`)
       .set('Authorization', `Bearer ${userAuth.token}`)
-    
+
+
     expect(response.status).toEqual(200)
-    expect(response.body).toEqual({isFriend: false})
-  });
-});
+    expect(response.body).toEqual({status: 'Friend'})
+  })
+})

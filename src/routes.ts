@@ -23,7 +23,7 @@ import {
 } from './friends/controllers'
 import { DeleteFriendshipController } from './friends/controllers/DeleteFriendshipController'
 import { GetAllFriendshipsController } from './friends/controllers/GetAllFriendshipsController'
-import { IsFriendController } from './friends/controllers/IsFriendController'
+import { GetStatusFriendController } from './friends/controllers/GetStatusFriendController'
 import { GetUserControllerByUsername } from './users/controllers/GetUserByUsername'
 
 const routes = Router()
@@ -93,9 +93,9 @@ const routes = Router()
   AuthenticationMiddleware.ensureAuthenticated, 
   GetAllFriendshipsController.getAll
 )
-.get('/friends/is_friend/:requesterUserId/:targetUserId',
+.get('/friends/status/:requesterUserId/:targetUserId',
   AuthenticationMiddleware.ensureAuthenticated, 
-  IsFriendController.isFriend
+  GetStatusFriendController.isFriend
 )
 
 
