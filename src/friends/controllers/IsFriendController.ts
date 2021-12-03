@@ -20,6 +20,7 @@ const IsFriendController = {
         return
       }
 
+      //mudar para status
       if(await IsFriendUsercase.isFriendship(requesterUserId, targetUserId)) {
         result.isFriend = true
       }
