@@ -69,7 +69,7 @@ describe('SendRequestFriend BadRequest', () => {
     await db.none('delete from users.user;')
   })
 
-  test('should return an error if user requester does not exist', async () => {
+  test('should return an error if user target does not exist', async () => {
     const userIamAuth = await createUserAndAuthHelper()
 
     const userRequester = await createUserHelper()

@@ -1,6 +1,10 @@
 import {Request, Response } from 'express'
 import { db } from '../../shared/database'
 
+/**
+ * Essa classe aceita um pedido de amizade
+ */
+
 const CreateFriendshipController = {
   createFriend: async (req: Request, res: Response) => {
     try {

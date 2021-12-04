@@ -3,12 +3,21 @@ import { db } from '../../shared/database'
 
 type Status = 'Unknow'| 'Waiting' | 'Friend'
 
+type ResultHttp = {
+  requesterUserId?: number,
+  targetUserId?: number,
+  status: Status
+}
+
 const GetStatusFriendController = {
   isFriend: async (req: Request, res: Response) => {
     try {
       const requesterUserId = parseInt(req.params.requesterUserId)
       const targetUserId = parseInt(req.params.targetUserId)
-      let statusFriend: Status = 'Unknow'
+
+      const responseHttpPayload: ResultHttp = {
+        status: 'Unknow'
+      }
 
       if(!await IsFriendUsercase.userExists(requesterUserId)) {
         res.status(400).json({message: 'requesterUserId not found'})
@@ -20,18 +29,18 @@ const GetStatusFriendController = {
         return
       }
 
-      if(await IsFriendUsercase.isSendRequestFriendship(requesterUserId, targetUserId)) {
-        statusFriend ='Waiting'
+      const requesterCreated = await IsFriendUsercase.isSendRequestFriendship(requesterUserId, targetUserId)
+      if(requesterCreated) {
+        responseHttpPayload.requesterUserId = requesterCreated.requesterId
+        responseHttpPayload.targetUserId = requesterCreated.targetId
+        responseHttpPayload.status ='Waiting'
       }
 
-      if(statusFriend == 'Waiting' && await IsFriendUsercase.isFriendship(requesterUserId, targetUserId)) {
-        statusFriend =   'Friend'
+      if(responseHttpPayload.status == 'Waiting' && await IsFriendUsercase.isFriendship(requesterUserId, targetUserId)) {
+        responseHttpPayload.status =   'Friend'
       }
 
-      const responsePayload = {
-        status: statusFriend
-      }
-      res.status(200).json(responsePayload).end()
+      res.status(200).json(responseHttpPayload).end()
     }
     catch(ex) {
       console.error(ex)
@@ -50,16 +59,16 @@ const IsFriendUsercase = {
     return user !== null
   },
 
-  isSendRequestFriendship: async (userOneId: number, userTwoId: number) => {
+  isSendRequestFriendship: async (userOneId: number, userTwoId: number): Promise<{requesterId: number, targetId: number} | null> => {
     const requestFriend = await db.oneOrNone<{requesterId: number, targetId: number}>(`
       select requester_id, target_id 
       from friends.send_request_friend
       where (
         (requester_id=$1 and target_id=$2) or
-        (target_id=$2 and requester_id=$1)
+        (requester_id=$2 and target_id=$1)
       )
     `, [userOneId,userTwoId])
-    return requestFriend !== null
+    return requestFriend
   },
 
   isFriendship: async (userOneId: number, userTwoId: number) => {

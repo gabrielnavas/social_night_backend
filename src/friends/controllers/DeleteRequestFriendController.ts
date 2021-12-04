@@ -46,10 +46,13 @@ const DeleteRequestFriendUsercase = {
     const sendRequest = await db.oneOrNone<{requester_id: number, target_id: number}>(`
       select requester_id, target_id
       from friends.send_request_friend
-      where 
+      where (
         requester_id=$1 and 
         target_id=$2
-      `,
+      ) or (
+        requester_id=$2 and 
+        target_id=$1
+      )`,
       [requesterUserId, targetUserId])
     return sendRequest !== null
   },
@@ -57,9 +60,13 @@ const DeleteRequestFriendUsercase = {
   deleteSendRequest: async (requesterUserId: number, targetUserId: number): Promise<void> => {
     await db.none(`
       delete from friends.send_request_friend 
-      where 
+      where (
         requester_id=$1 and 
-        target_id=$2`
+        target_id=$2
+      ) or (
+        requester_id=$2 and 
+        target_id=$1
+      )`
     ,[requesterUserId, targetUserId])
   }
 }
